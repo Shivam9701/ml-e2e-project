@@ -29,6 +29,25 @@ def save_object(obj: object, file_path: str):
         raise CustomException(e, sys)
 
 
+def load_object(file_path: str):
+    """
+    Load the object from the specified file path.
+    Args:
+        file_path (str): The file path to load the object.
+    Returns:
+        object: The loaded object.
+    """
+    try:
+        with open(file_path, "rb") as file:
+            obj = dill.load(file)
+
+        logging.info(f"Object loaded from {file_path}")
+        return obj
+
+    except Exception as e:
+        raise CustomException(e, sys)
+
+
 def evaluate_models(
     models: dict,
     params: dict,
@@ -59,10 +78,9 @@ def evaluate_models(
             model.set_params(**grid.best_params_)
             model.fit(X_train, y_train)
 
-            y_train_pred = model.predict(X_train)
+            # y_train_pred = model.predict(X_train)
             y_pred = model.predict(X_test)
 
-            train_score = r2_score(y_train, y_train_pred)
             test_score = r2_score(y_test, y_pred)
 
             model_report[model_name] = test_score
