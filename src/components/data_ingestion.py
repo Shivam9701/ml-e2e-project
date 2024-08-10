@@ -10,6 +10,7 @@ from src.components.data_transformation import (
     DataTransformationConfig,
     DataTransformation,
 )
+from src.components.model_training import ModelTrainingConfig, ModelTrainer
 
 
 @dataclass
@@ -105,4 +106,11 @@ if __name__ == "__main__":
     transformer_config = DataTransformationConfig()
     transformer = DataTransformation(transformer_config)
 
-    transformer.initiate_data_transformation(train_path, test_path)
+    train_arr, test_arr, preprocessor_path = transformer.initiate_data_transformation(
+        train_path, test_path
+    )
+
+    model_config = ModelTrainingConfig()
+    model_trainer = ModelTrainer(model_config)
+    score = model_trainer.initiate_model_trainer(train_arr, test_arr)
+    print(f"Best Model Score: {score}")
