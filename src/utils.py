@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import dill
 from sklearn.metrics import r2_score
-
+from sklearn.model_selection import GridSearchCV
 
 from src.exception import CustomException
 from src.logger import logging
@@ -31,6 +31,7 @@ def save_object(obj: object, file_path: str):
 
 def evaluate_models(
     models: dict,
+    params: dict,
     X_train: np.ndarray,
     y_train: np.ndarray,
     X_test: np.ndarray,
@@ -51,8 +52,13 @@ def evaluate_models(
 
     try:
         model_report = {}
-        for model_name, model in models.items():
+        for param, (model_name, model) in zip(params.keys(), models.items()):
+            grid = GridSearchCV(model, params[param], cv=3)
+            grid.fit(X_train, y_train)
+
+            model.set_params(**grid.best_params_)
             model.fit(X_train, y_train)
+
             y_train_pred = model.predict(X_train)
             y_pred = model.predict(X_test)
 
